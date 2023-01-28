@@ -202,7 +202,7 @@ namespace BlazorAppLogin.Data
             return result;
         }
 
-        public bool pRecordUpdate(ref int xID, string xDescription, string xAction)
+        public bool pRecordUpdate(ref int xID, string xDescription, string xUserType, string xPwd, string xAction)
         {
 
             SqlCommand myCommand = new SqlCommand("P_c_user_Updt", MConnection);
@@ -214,7 +214,6 @@ namespace BlazorAppLogin.Data
             parameterReturn_v.Direction = ParameterDirection.ReturnValue;
             myCommand.Parameters.Add(parameterReturn_v);
 
-
             SqlParameter parameterID = new SqlParameter("@ID", SqlDbType.Int, 4);
             parameterID.Value = xID;
             parameterID.Direction = ParameterDirection.InputOutput;
@@ -224,12 +223,17 @@ namespace BlazorAppLogin.Data
             parameterDescription.Value = xDescription;
             myCommand.Parameters.Add(parameterDescription);
 
+            SqlParameter parameterUserType = new SqlParameter("@UserType", SqlDbType.NVarChar, 100);
+            parameterUserType.Value = xUserType;
+            myCommand.Parameters.Add(parameterUserType);
+
+            SqlParameter parameterPwd = new SqlParameter("@Pwd", SqlDbType.NVarChar, 100);
+            parameterPwd.Value = xPwd;
+            myCommand.Parameters.Add(parameterPwd);
 
             SqlParameter parameterAction = new SqlParameter("@Action", SqlDbType.NVarChar, 10);
             parameterAction.Value = xAction;
             myCommand.Parameters.Add(parameterAction);
-
-
 
             try
                 {
@@ -249,6 +253,52 @@ namespace BlazorAppLogin.Data
             return ((int)parameterReturn_v.Value == 0);
 
     }
+
+        public bool pRecordAdd(string xCode,string xDescription, string xUserType, string xPwd)
+        {
+
+            SqlCommand myCommand = new SqlCommand("P_c_Login_Add", MConnection);
+
+            // Mark the Command as a SPROC
+            myCommand.CommandType = CommandType.StoredProcedure;
+
+            SqlParameter parameterReturn_v = new SqlParameter("@RETURN_VALUE", SqlDbType.Int, 4);
+            parameterReturn_v.Direction = ParameterDirection.ReturnValue;
+            myCommand.Parameters.Add(parameterReturn_v);
+
+            SqlParameter parameterCode = new SqlParameter("@Code", SqlDbType.NVarChar, 100);
+            parameterCode.Value = xCode;
+            myCommand.Parameters.Add(parameterCode);
+
+            SqlParameter parameterDescription = new SqlParameter("@Description", SqlDbType.NVarChar, 100);
+            parameterDescription.Value = xDescription;
+            myCommand.Parameters.Add(parameterDescription);
+
+            SqlParameter parameterUserType = new SqlParameter("@UserType", SqlDbType.NVarChar, 100);
+            parameterUserType.Value = xUserType;
+            myCommand.Parameters.Add(parameterUserType);
+
+            SqlParameter parameterPwd = new SqlParameter("@Pwd", SqlDbType.NVarChar, 100);
+            parameterPwd.Value = xPwd;
+            myCommand.Parameters.Add(parameterPwd);
+
+            try
+            {
+                MConnection.Open();
+                myCommand.ExecuteNonQuery();
+                MConnection.Close();
+
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = ex.Message;
+                MConnection.Close();
+                return false;
+            }
+
+            return ((int)parameterReturn_v.Value == 0);
+
+        }
 
     }
 }

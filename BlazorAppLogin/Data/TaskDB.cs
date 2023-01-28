@@ -17,8 +17,6 @@ using System.Windows.Input;
 namespace BlazorAppLogin.Data
 {
 
-
-
     public class TaskRecord
     {
         public int Task_ID { get; set; }

@@ -135,6 +135,8 @@
     private class Model
     {
         public string Description { get; set; } = "";
+        public string User_Type { get; set; } = "";
+        public string Pwd { get; set; } = "";
     }
     private Model model = new Model();
 
@@ -172,7 +174,7 @@
         int xxid = userdb.MyUserRecord.ID;
         if (userdb.MyUserRecord.ID > 0)
         {
-            if (userdb.pRecordUpdate(ref xxid, model.Description, "UPDATE"))
+            if (userdb.pRecordUpdate(ref xxid, model.Description, model.User_Type, model.Pwd, "UPDATE"))
             {
                 cp2.hideme();
                 toastPrompt.Show("Saved");
