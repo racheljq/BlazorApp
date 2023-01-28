@@ -1,0 +1,72 @@
+﻿@page "/timerdemo"
+@layout CustomLayout
+@using System.Timers
+@implements IDisposable
+
+<PageTitle>Timer Demo</PageTitle>
+
+<h1>Timer Demo</h1>
+<br /><br />
+
+<span style="color:red;font-weight:700">
+    @message
+</span>
+@code {
+    //https://www.youtube.com/watch?v=I7gBTLeiHG8
+    private int currentCount = 0;
+    private string message = "";
+
+
+
+    private Timer timer;
+
+    protected override void OnInitialized()
+    {
+
+        base.OnInitialized();
+        message = DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss tt");
+
+        timer = new Timer();
+        timer.Interval = 1000;
+        timer.Elapsed += OnTimerElapsed;
+        timer.Enabled = true;
+    }
+
+    private  void OnTimerElapsed(object? sender, ElapsedEventArgs e)
+    {
+
+
+
+        message = DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss tt");
+        Console.WriteLine(message);
+        InvokeAsync(() => 
+        { 
+            StateHasChanged();
+        });
+
+    }
+
+    public void Dispose()
+    {
+        // stop timer when witch to another page
+
+        timer.Dispose();
+
+    }
+
+    private async Task IncrementCount()
+    {
+
+ 
+        await Task.Delay(1000);
+        currentCount++;
+
+
+    }
+
+
+
+
+
+
+}

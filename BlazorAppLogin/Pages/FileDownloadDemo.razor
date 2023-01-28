@@ -1,0 +1,37 @@
+﻿@page "/filedownloaddemo"
+@using BlazorAppLogin.Shared;
+@inject IJSRuntime JSRuntime
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment env
+@using System.IO
+
+
+<PageTitle>
+    File Download Demo
+
+</PageTitle>
+<h3>File Download Demo</h3>
+<button type="button" @onclick="download_Click">
+    Click to download
+</button>
+
+@code {
+    protected void download_Click()
+    {
+
+
+               byte[] array;
+
+            var path = $"{env.WebRootPath}\\images\\image.png";
+
+            //For Reading Files
+            using (FileStream fileStream = File.OpenRead(path))
+            {
+                array = new byte[fileStream.Length];
+                fileStream.Read(array, 0, array.Length);
+            }
+
+        JSRuntime.InvokeVoidAsync("saveAsFile", "image.png",Convert.ToBase64String(array));
+
+         
+    }
+}

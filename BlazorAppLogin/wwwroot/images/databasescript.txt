@@ -1,0 +1,173 @@
+
+/****** Object:  Table [dbo].[c_user]    Script Date: 20/9/2022 10:45:42 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[c_user](
+	[id] [int] NOT NULL,
+	[code] [nvarchar](30) NOT NULL,
+	[description] [nvarchar](100) NOT NULL,
+	[usertype] [varchar](30) NOT NULL,
+	[createdat] [datetime] NOT NULL,
+	[pwd] [nvarchar](100) NOT NULL,
+ CONSTRAINT [PK_c_user] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [IX_c_user]    Script Date: 20/9/2022 10:45:42 AM ******/
+CREATE UNIQUE NONCLUSTERED INDEX [IX_c_user] ON [dbo].[c_user]
+(
+	[code] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  StoredProcedure [dbo].[p_c_Login]    Script Date: 20/9/2022 10:45:42 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+--p_c_Login 'admin','6E8C948A9B01083D365E'
+create                   PROCEDURE [dbo].[p_c_Login] 
+  @Code nvarchar(30),
+  @Pwd nvarchar(100)
+AS
+   set nocount on
+
+
+
+
+ --  set @pwd=dbo.f_c_encryptpwd(@pwd,@code)
+
+   if exists(select a.*
+   from c_User a where a.Code=@Code and (cast(a.pwd as varbinary(30))=cast(@pwd as varbinary(30))))
+   begin
+  
+     return 100
+   end
+   
+   return 1
+GO
+/****** Object:  StoredProcedure [dbo].[p_c_User_Fd]    Script Date: 20/9/2022 10:45:42 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE                 PROCEDURE [dbo].[p_c_User_Fd] 
+  @ID integer=0,
+  @Code nvarchar(30)
+
+AS
+      set nocount on
+
+
+
+
+
+  select a.*
+  from c_User a 
+  where
+  (isnull(@Code,'')='' or a.Code=@Code) and
+  (isnull(@ID,0)=0 or a.ID=@ID) and
+  (isnull(@Code,'')<>'' or isnull(@ID,0)<>0)
+
+return 0
+GO
+/****** Object:  StoredProcedure [dbo].[p_c_user_Src]    Script Date: 20/9/2022 10:45:42 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+/*
+
+exec p_c_user_Src '',10,1
+
+*/
+create            PROCEDURE [dbo].[p_c_user_Src]
+  @Desc nvarchar(100),
+  @PageRow int=20,
+  @PageIndex int
+
+AS
+  set nocount on
+  select  @Desc='%'+isnull(@Desc,'')+'%'
+  
+  declare @PageCount int,@RowCount int,@Rows int,
+          @StartRow int
+
+
+
+
+
+  select @RowCount=count(a.ID)
+  from c_user a
+  where 
+                 (isnull(a.description,'') like @Desc) or (isnull(a.code,'') like @Desc) 
+                 
+                 
+                 
+  
+  select aa.* from (
+    select ROW_NUMBER() OVER(ORDER BY a.description) as seq, 
+          a.*
+  from c_user a   where 
+                 (a.description like @Desc) or (a.code like @Desc)) aa
+  where aa.seq > (@PageIndex-1)*@PageRow and aa.seq<=(@PageIndex *@PageRow)
+  order by aa.seq
+  
+  select @Pagecount=convert(int,(@RowCount+@PageRow-1)/@PageRow)
+
+  select @Pagecount as pagecount,
+         @PageIndex as Pageindex,@Rowcount as ResultCount
+  
+
+return 0
+GO
+/****** Object:  StoredProcedure [dbo].[p_c_user_Updt]    Script Date: 20/9/2022 10:45:42 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE        PROCEDURE [dbo].[p_c_user_Updt] 
+  @Id int output,
+  @Description nvarchar(100),
+  @Action nvarchar(10)
+  
+AS
+   set nocount on
+   declare @R int
+
+
+
+
+
+/****check************************************/
+
+   set @Description=rtrim(ltrim(@Description))
+   if isnull(@Description,'')=''
+   begin
+     RAISERROR('Invalid Description',16,1)
+     return 1
+   end   
+
+  
+
+/******update**************/
+   if @Action='UPDATE'
+   begin
+
+      update c_user set Description=@Description where Id=@Id
+     if @@error<>0 or @@rowcount=0    
+     begin
+       RAISERROR('Unable to update record.',16,1)
+       return 1
+     end
+     return 0
+   end
+
+   RAISERROR('Invalid action.',16,1)
+   return 1
+GO

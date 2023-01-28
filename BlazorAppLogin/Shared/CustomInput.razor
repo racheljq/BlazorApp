@@ -1,0 +1,18 @@
+﻿
+<input value="@Value1" @oninput="@OnInputChange" />
+<h4>Result in component: @Value1</h4>
+
+@code {
+    [Parameter]
+    public string Value1 { get; set; }
+
+    [Parameter]
+    public EventCallback<string> Value1Changed { get; set; }
+
+
+    private async Task OnInputChange(ChangeEventArgs args)
+    {
+        Value1 = (string)args.Value;
+        await Value1Changed.InvokeAsync(Value1);
+    }
+}

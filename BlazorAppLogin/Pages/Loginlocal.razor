@@ -1,0 +1,77 @@
+﻿@page "/loginlocal"
+
+@layout EmptyLayout
+
+
+@using BlazorAppLogin.Authentication
+@inject UserAccountService userAccountService
+@inject IJSRuntime js
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navManager
+
+
+
+<div class="row">
+    <div class="col-lg-4 offset-lg-4 pt-4 pb-4 border" style="width:400px">
+        <div class="mb-3 text-center">
+            <h3>LOGIN</h3>
+        </div>
+        <div style="color:red;padding:5px">
+            @errmsg
+        </div>
+        <div class="mb-3">
+            <label>User Name</label>
+            <input @bind="model.UserName" class="form-control" placeholder="User Name" />
+        </div>
+        <div class="mb-3">
+            <label>Password</label>
+            <input @bind="model.Password" type="password" class="form-control" placeholder="Password" />
+        </div>
+        <div class="mb-3 d-grid gap-2">
+            <button @onclick="Authenticate" class="btn btn-primary">Login</button>
+        </div>
+    </div>
+    @msg
+
+</div>
+
+
+
+
+@code {
+    //https://www.youtube.com/watch?v=iq2btD9WufI
+
+
+    public string errmsg ="" ;
+    public string msg = "";
+    private class Model {
+        public string UserName{ get; set; }
+        public string Password { get; set; }
+    }
+
+    private Model model = new Model();
+
+
+    private async Task Authenticate(){
+        errmsg = "";
+
+        var userAccount = userAccountService.GetByUserName(model.UserName);
+
+        //msg = userAccountService.a;
+        if (userAccount==null || userAccount.Password != model.Password){
+            errmsg = "Invalid User Name or Password";
+            // await js.InvokeVoidAsync("Alert", "Invalid User Name or Password");
+            return;
+        }
+
+        var customeAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await customeAuthStateProvider.UpdateAuthenticationState(new UserSession
+            {
+                UserName = userAccount.UserName,
+                Role = userAccount.Role
+            });
+
+        navManager.NavigateTo("/", true);
+
+    }
+}

@@ -1,0 +1,20 @@
+﻿@page "/urlparameterdemo/{p1}/{p2}"
+@layout CustomLayout
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Url Parameter Demo</h1>
+
+<p role="status">text1: @p1</p>
+<p role="status">text2: @p2</p>
+
+
+@code {
+    [Parameter]
+    public string p1 { get; set; } = "";
+
+    [Parameter]
+    public string p2 { get; set; } = "";
+
+
+}

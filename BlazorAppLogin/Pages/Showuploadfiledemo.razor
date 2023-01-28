@@ -1,0 +1,128 @@
+﻿@page "/showuploadfiledemo"
+@using BlazorAppLogin.Shared;
+@inject IJSRuntime JSRuntime
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment env
+@using System.IO
+ 
+<PageTitle>Show Upload File Demo
+
+</PageTitle>
+
+
+<style>
+    .drop-zone {
+        padding:20px;
+        width:60%;
+        min-height:200px;
+        border:2px dashed #0087F7;
+        border-radius:8px;
+    }
+    .drop-zone.hover{
+        border-style:solid;
+    }
+</style>
+
+<h3>File Drop Zone</h3>
+
+<div @ref="@dropZoneElement" class="drop-zone">
+    <h2> Drop a File</h2>
+    <div @ref="@inputFileContainer">
+        <InputFile OnChange="@OnChange" multiple />
+
+    </div>
+    <div class="progress">
+        <div class="progress-bar" role="progressbar" style="@($"width:{progressBar}%")" aria-valuemin="0" aria-valuemax="100">
+            @($"{progressBar}%")
+        </div>
+    </div>
+
+
+</div>
+@if (imageList != null)
+{
+    <table>
+        <tr>
+            @foreach (var img in imageList)
+            {
+                <td>
+                    <img src="@img" width="150" height="150" />
+                </td>
+            }
+        </tr>
+    </table>
+}
+
+@code{
+    //https://www.youtube.com/watch?v=Onsjhh_lLCY
+
+    string progressBar ="";
+    long progressBarInt = 0;
+
+
+    ElementReference dropZoneElement;
+    ElementReference inputFileContainer;
+
+    IJSObjectReference _module;
+    IJSObjectReference _dropzoneInstance;
+
+    List<string> imageList = new List<string>();
+    string imgsrc;
+
+    public Showuploadfiledemo()
+    {
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            //for load JS File
+            _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/dropzone.js");
+
+            ////For initialize the Drop Zone
+            _dropzoneInstance = await _module.InvokeAsync<IJSObjectReference>("initializeFileDropZone", dropZoneElement, inputFileContainer);
+        }
+
+    }
+
+
+    private async Task OnChange(InputFileChangeEventArgs e)
+    {
+        long maxFileSize = 1024 * 1024 * 15;
+        var files = e.GetMultipleFiles();
+
+
+        long numberoffiles = files.Count;
+        progressBarInt = 0;
+        foreach (var file in files)
+        {
+            using var stream = file.OpenReadStream(maxFileSize);
+
+            
+
+
+
+           
+            var path = $"{env.WebRootPath}\\images\\{file.Name}";
+     //       var path = $"C:\\test\\{file.Name}";
+            FileStream fs = File.Create(path);
+            await stream.CopyToAsync(fs);
+            stream.Close();
+            fs.Close();
+
+            //For Reading Files
+            using (FileStream fileStream=File.OpenRead(path))
+            {
+                byte[] array = new byte[fileStream.Length];
+                fileStream.Read(array, 0, array.Length);
+                imgsrc = "data:" + file.ContentType + ";base64," + Convert.ToBase64String(array);
+                imageList.Add(imgsrc);
+            }
+
+            progressBarInt += 1;
+            progressBar = (100.0 * progressBarInt / numberoffiles).ToString("0");
+        }
+    }
+
+
+}

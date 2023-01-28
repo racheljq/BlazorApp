@@ -1,0 +1,87 @@
+﻿@page "/showmodaldemo"
+@using BlazorAppLogin.Shared;
+@inject IJSRuntime js
+<PageTitle>Show Modal Demo
+
+</PageTitle>
+
+
+
+<button type="button" @onclick="Delete_Click">
+    Delete Test
+</button>
+
+
+
+<ConfirmBox @ref="confirmBox1" UserChoice="ConfirmDelete_Click"></ConfirmBox>
+
+<br /><br />
+
+<button type="button" @onclick="show111_Click">
+    show confirm
+</button>
+<ConfirmPrompt @ref="cp" Title="How is Blazor working for you?" UserChoice="confirmPrompt_Click" />
+
+<br />
+<br />
+You have chosen: @message 
+
+@code{
+    private string message = "";
+
+    public Showmodaldemo()
+    {
+    }
+
+
+
+    //confirm box test
+
+    protected ConfirmBox? confirmBox1 { get; set; }
+
+    protected void Delete_Click()
+    {
+        confirmBox1.Show("Delete Button is Clicked");
+    }
+
+
+    protected async Task ConfirmDelete_Click(bool deleteConfirmed)
+    {
+        message = "";
+        if (deleteConfirmed)
+        {
+            message = "Delete";
+        }
+    }
+
+
+
+    protected SurveyPrompt sv { get; set; }
+
+    protected void show_survey_Click()
+    {
+        sv.showsv();
+    }
+    
+    ///////////////////////////////////
+
+
+    protected ConfirmPrompt? cp { get; set; }
+
+    protected void show111_Click()
+    {
+        cp.show("Testing");
+    }
+
+    protected async Task confirmPrompt_Click(bool YESNO)
+    {
+        if (YESNO)
+        {
+            message = "YES";
+        }else {
+            message = "NO";
+        }
+    }
+
+
+}

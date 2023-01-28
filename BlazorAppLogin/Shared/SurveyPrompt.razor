@@ -1,0 +1,53 @@
+﻿
+@if (show123){
+
+
+<div class="alert alert-secondary mt-4">
+    <span class="oi oi-pencil me-2" aria-hidden="true"></span>
+    <strong>@Title</strong>
+
+    <span class="text-nowrap">
+        Please take our
+        <a target="_blank" class="font-weight-bold link-dark" href="https://go.microsoft.com/fwlink/?linkid=2149017">brief survey</a>
+    </span>
+    and tell us what you think.
+
+    <button type="button" @onclick="hideme">Hide</button>
+
+        <button type="button" @onclick="() => OnSend(true)">Send</button>
+</div>
+}
+
+@code {
+    //https://www.youtube.com/watch?v=1VturXFHmec
+    // Demonstrates how a parent component can supply parameters
+
+    protected bool show123 = true;
+
+    public void showsv()
+    {
+        show123 = true;
+    }
+
+    protected void hideme()
+    {
+        show123 = false;
+    }
+
+    [Parameter]
+    public string? Title { get; set; }
+
+
+    [Parameter]
+    public EventCallback<bool> UserSend { get; set; }
+
+
+    protected async Task OnSend(bool value)
+    {
+
+        show123 = false;
+        await UserSend.InvokeAsync(value);
+    }
+}
+
+

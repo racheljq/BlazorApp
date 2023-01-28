@@ -1,0 +1,215 @@
+﻿@using BlazorAppLogin.Data
+@inject IConfiguration iconfiguration
+
+
+<style>
+/* The Modal (background) */
+.modal {
+  display:block ; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #888;
+  width: 500px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.4s;
+  animation-name: animatetop;
+  animation-duration: 0.4s
+}
+
+
+/* The Close Button */
+.close {
+  color: black;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-header {
+  padding: 2px 16px;
+        font-size: 20px;
+        font-weight:bold;
+  /*background-color: #5cb85c;*/
+  color: black;
+}
+
+.modal-body {padding: 20px 16px;}
+
+.modal-footer {
+  padding: 2px 16px;
+ /* background-color: #5cb85c;
+  color: white;*/
+}
+</style>
+<InProgressPrompt @ref="cp2" />
+<ToastPrompt @ref="toastPrompt"></ToastPrompt>
+@if (ShowBox){
+
+    <!-- The Modal -->
+    <div class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                @Title
+                <span @onclick="hideme" class="close">&times;</span>
+              
+            </div>
+            <div class="modal-body">
+
+                @if (userdb.MyUserRecord.ID > 0)
+                {
+
+                    <table class="table">
+                        <tr><td>ID </td><td>  @userdb.MyUserRecord.ID.ToString()</td></tr>
+                        <tr><td>Code </td><td>  @userdb.MyUserRecord.Code</td></tr>
+                        <tr><td>Description </td><td>
+                                <input @bind="model.Description" style="width:300px" class="form-control" placeholder="key to search" />
+                            
+                            </td></tr>
+
+                    </table>
+                  
+
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" @onclick="() => OnSave()" class="btn btn-secondary" data-dismiss="model">Save</button>
+
+             
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+
+}
+
+@code {
+    //https://www.youtube.com/watch?v=1VturXFHmec
+    // Demonstrates how a parent component can supply parameters
+
+    protected InProgressPrompt? cp2 { get; set; }
+    protected ToastPrompt? toastPrompt { get; set; }
+
+    protected UserDB? userdb { get; set; } 
+
+
+    protected override void OnInitialized()
+    {
+
+        base.OnInitialized();
+
+        userdb = new UserDB(iconfiguration);
+    }
+
+
+    private class Model
+    {
+        public string Description { get; set; } = "";
+    }
+    private Model model = new Model();
+
+    private bool needrefresh = false;
+
+    protected bool ShowBox = false;
+
+    public void show(int xid)
+    {
+
+
+        ShowBox = true;
+        LoadData(xid);
+        StateHasChanged();
+    }
+
+    protected void hideme()
+    {
+        ShowBox = false;
+    }
+
+    [Parameter]
+    public string? Title { get; set; }
+
+
+
+    [Parameter]
+    public EventCallback<bool> UserChoice { get; set; }
+
+
+    protected async Task OnSave()
+    {
+        cp2.show("In Progress");
+
+        int xxid = userdb.MyUserRecord.ID;
+        if (userdb.MyUserRecord.ID > 0)
+        {
+            if (userdb.pRecordUpdate(ref xxid, model.Description, "UPDATE"))
+            {
+                cp2.hideme();
+                toastPrompt.Show("Saved");
+            }
+            LoadData(userdb.MyUserRecord.ID);
+        }
+
+        needrefresh = true;
+        await UserChoice.InvokeAsync(needrefresh);
+
+        cp2.hideme();
+
+    }
+
+
+
+
+
+    private void  LoadData(int xid)
+    {
+        needrefresh = false;
+
+        if (userdb.pRecordFind(xid, ""))
+        {
+            model.Description = userdb.MyUserRecord.Description;
+        }
+        else
+        {
+            return;
+        }
+
+        userdb.CloseConnection();
+
+    }
+
+
+    
+}
+
+

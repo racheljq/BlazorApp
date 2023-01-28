@@ -1,0 +1,33 @@
+﻿@page "/markupstringdemo"
+
+
+<PageTitle>Markup String Demo</PageTitle>
+
+<style>
+    .FromRazorStyle {
+        color: red;
+    }
+    }
+</style>
+
+<h1>Markup String Demo</h1>
+
+<br />
+<div class='btn-primary'>afafssaf</div>
+
+
+<MarkupDown Text="@text" />
+
+@code {
+    private string text = "<div class='test1'>afafssaf</div>";
+
+    protected override Task OnInitializedAsync()
+
+    {
+
+        text = $"<div class='btn-primary'>afafssaf</div>";
+
+        return base.OnInitializedAsync();
+
+    }
+}

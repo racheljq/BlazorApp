@@ -1,0 +1,34 @@
+﻿@page "/textautocompletedemo"
+
+@using BlazorAppLogin.Data;
+@inject IConfiguration iconfiguration
+
+
+
+
+<PageTitle>Text AutoComplete Demo</PageTitle>
+
+<h1>Text AutoComplete Demo</h1>
+
+
+<CustomInput @bind-Value1="@InputValue" @bind-Value1:event="Value1Changed"></CustomInput>
+
+<br />
+result: @InputValue
+
+<hr />
+<CustomAutoComplete @bind-Value1="@InputValue" @bind-Value1:event="Value1Changed"></CustomAutoComplete>
+
+<hr />
+<CustomDropDown @bind-Value1="@InputValue" @bind-Value1:event="Value1Changed" @bind-Text1="@InputText1"  @bind-Text1:event="Text1Changed"></CustomDropDown>
+
+<hr />
+<CustomSelect @bind-Value1="@InputValue" @bind-Value1:event="Value1Changed"></CustomSelect>
+
+<hr />
+@code {
+
+    public string InputValue = "Example";
+
+    public string InputText1 = "Example";
+}

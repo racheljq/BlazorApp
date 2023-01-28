@@ -1,0 +1,76 @@
+﻿
+@using BlazorAppLogin.Authentication
+@inherits LayoutComponentBase
+
+
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navManager
+
+@using BlazorAppLogin.Data
+@inject AppState appstate
+@implements IDisposable
+
+
+<PageTitle>BlazorAppLogin</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4" style="background-color:@appstate.SelectedColour">
+            Color: @appstate.SelectedColour
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a> 
+              
+            <AuthorizeView>
+                <Authorized>
+                    <a @onclick="Logout" href="javascript:void(0)">Logout [@context.User.Identity.Name ]</a>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="/login">Login</a>
+                </NotAuthorized>
+            </AuthorizeView>
+
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code{
+    //public string p1 { get; set; } = "";
+    //protected override void OnParametersSet()
+    //{
+    //    // pull out the "Slug" parameter from the route data
+    //    object slug = null;
+    //    if ((this.Body.Target as RouteView)?.RouteData.RouteValues?.TryGetValue("p1", out p1) == true)
+    //    {
+    //        p1 = p1?.ToString();
+    //    }
+    //}
+
+
+
+    private async Task Logout()
+    {
+
+        var customAuthStateProvider = (CustomAuthenticationStateProvider)authStateProvider;
+        await customAuthStateProvider.UpdateAuthenticationState(null);
+        navManager.NavigateTo("/", true);
+
+    }
+
+
+    protected override void OnInitialized()
+    {
+        appstate.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        appstate.OnChange -= StateHasChanged;
+    }
+}

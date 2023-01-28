@@ -1,0 +1,178 @@
+﻿@using BlazorAppLogin.Shared;
+@inject IJSRuntime js
+
+@using BlazorAppLogin.Data
+@using System.Data.SqlClient
+@using System.Collections.ObjectModel
+@inject IConfiguration iconfiguration
+
+
+
+<h1>Custom DropDown</h1>
+
+
+<div class="customdd">
+    <button @onclick="() => show_click()" type="button" class="dropbtn">@Text1</button>
+     @if(showlist)
+     {
+    <div class="customdd-content">
+            <input @ref="firstInput" type="text" @bind="searchtext" @oninput="@OnInputChange" onkeydown="elementfocus(this.previousElementSibling,this.nextElementSibling,this.parentElement.previousElementSibling,true)" />
+
+
+                @if (TempRecordList == null)
+                {
+                  <p> Record not found...</p> 
+                }
+                else
+                {
+
+                    @if (TempRecordList.Count == 0)
+                    {
+                        <p> Record not found...</p>
+                    }
+                    else
+                    {
+                        @foreach (var rec in TempRecordList)
+                        {
+                            <button type="button" onkeydown="elementfocus(this.previousElementSibling,this.nextElementSibling,this.parentElement.previousElementSibling,true)" @onclick="@(e => row_click(@rec.ID.ToString(),@rec.Description))">@rec.Description</button>
+
+                        }
+
+                    <button type="button" onkeydown="elementfocus(this.previousElementSibling,this.nextElementSibling,this.parentElement.previousElementSibling,true)" @onclick="@(e => row_click("1000","test1"))">test1</button>
+
+                    }
+
+                }
+
+       
+    </div>
+    }
+</div>
+
+
+
+@code {
+    private bool showlist = false;
+
+    [Parameter]
+    public string Value1 { get; set; }
+
+    [Parameter]
+    public string Text1 { get; set; }
+
+    [Parameter]
+    public EventCallback<string> Value1Changed { get; set; }
+
+    [Parameter]
+    public EventCallback<string> Text1Changed { get; set; }
+
+    private async Task OnHiddenInputChange(ChangeEventArgs args)
+    {
+        Value1 = (string)args.Value;
+        await Value1Changed.InvokeAsync(Value1);
+    }
+
+    private async Task OnInputChange(ChangeEventArgs args)
+    {
+        //   SearchText=(string)args.Value;
+        await searchrecord((string)args.Value);
+
+        //Value1 = (string)args.Value;
+        //await Value1Changed.InvokeAsync(Value1);
+    }
+
+    private async Task show_click()
+    {
+        showlist = !showlist;
+//        showlist = true;
+        //StateHasChanged();
+        if (showlist)
+        {
+
+
+
+            if (TempRecordList == null)
+            {
+                searchrecord("");
+            }
+
+            await Task.Delay(500);
+            js.InvokeVoidAsync("BlazorFocusElement", firstInput);
+    
+        }
+   
+    }
+
+    private async Task row_click(string xvalue, string xtext)
+    {
+        showlist = false;
+        Value1 = xvalue;
+        Text1 = xtext;
+        await Value1Changed.InvokeAsync(Value1);
+        await Text1Changed.InvokeAsync(Text1);
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            //   firstInput.FocusAsync();
+            //firstInput = new ElementReference();
+            //firstInput.FocusAsync();
+        }
+    }
+
+
+    private ElementReference firstInput;
+    private string searchtext { get; set; } = "";
+    private string message { get; set; } = "";
+    private class TempRecord
+    {
+        #region Properties
+        public int ID { get; set; } = 0;
+        public string Code { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string UserType { get; set; } = "";
+
+        #endregion
+    }
+    private List<TempRecord> TempRecordList;
+
+    public async Task searchrecord(string xsearch)
+    {
+        SqlDataReader result;
+
+        TempRecord item;
+
+
+        message = "Searching..." + xsearch;
+        var userdb = new UserDB(iconfiguration);
+        result = userdb.pRecordSearch(xsearch, 10, 1);
+
+
+        if (TempRecordList==null)
+        {
+            TempRecordList = new();
+        }
+
+        TempRecordList.Clear();
+
+
+
+        while (result.Read())
+        {
+            item = new TempRecord();
+            item.ID = (int)result["ID"];
+            item.Code = (string)result["Code"];
+            item.Description = (string)result["Description"];
+            item.UserType = (string)result["UserType"];
+            TempRecordList.Add(item);
+
+        }
+
+        userdb.CloseConnection();
+      //  StateHasChanged();
+    }
+
+}

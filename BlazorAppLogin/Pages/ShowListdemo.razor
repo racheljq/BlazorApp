@@ -1,0 +1,178 @@
+﻿@page "/showlistdemo"
+@using BlazorAppLogin.Shared;
+@inject IJSRuntime js
+<PageTitle>Show List Demo</PageTitle>
+
+
+@using BlazorAppLogin.Data
+@using System.Data.SqlClient
+@using System.Collections.ObjectModel
+@inject WeatherForecastService ForecastService
+@inject IConfiguration iconfiguration
+
+<h1>User List</h1>
+<div style="display:inline-block">
+    <input @bind="model.SearchText" @onkeyup="@Enter" style="width:300px" class="form-control" placeholder="key to search" />
+</div>
+
+<button @onclick="searchrecord" class="btn btn-primary">Search</button>
+<button @onclick="test1" class="btn btn-primary">Test</button>
+
+<div>@errormessage</div>
+@if (TempRecordList.Count == 0)
+{
+    <br />
+    <br />
+    <br />
+    <p><em>Record not found...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id  </th>
+                <th>Code</th>
+                <th>Description</th>
+                <th>User Type</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+
+ 
+       @foreach (var rec in TempRecordList)
+        {
+        <tr>
+                    <td>@rec.ID.ToString()</td>
+                    <td>@rec.Code</td>
+                    <td>@rec.Description</td>
+                    <td>@rec.UserType</td>
+                    <td><button @onclick="@(e => showUser(@rec.ID))" class="btn btn-primary">More</button>
+
+                        <button type="button" onclick="setdisplayvalue('div-@rec.ID.ToString()','')">Show msg</button>
+                        <div id="div-@rec.ID.ToString()" style="display:none">
+                            show me <br />
+                            <div>@errormessage @rec.ID</div>
+                            <button type="button" onclick="setdisplayvalue('div-@rec.ID.ToString()','none')">Close</button>
+                        </div>
+                    </td>
+        </tr>
+        }
+        </tbody>
+    </table>
+
+    <UserPrompt @ref="cp" Title="User" UserChoice="statusPrompt_Click" />
+}
+
+
+
+@code {
+    private string errormessage = "";
+    private class Model
+    {
+        public string SearchText { get; set; } = "";
+    }
+    private Model model = new Model();
+
+    private class TempRecord
+    {
+        #region Properties
+        public int ID { get; set; } = 0;
+        public string Code { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string UserType { get; set; } = "";
+
+        #endregion
+    }
+    private List<TempRecord> TempRecordList;
+
+
+
+    public ShowListdemo()
+    {
+        TempRecordList = new List<TempRecord>{};
+    }
+
+    private WeatherForecast[]? forecasts;
+    private  SqlDataReader result;
+    //protected override async Task OnInitializedAsync()
+    //{
+    // //   forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+    //    // result = await userDB.pRecordSearch("", 50, 1);
+
+
+    //}
+    protected override void OnInitialized()
+    {
+        searchrecord();
+    }
+
+    public void Enter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            searchrecord();
+        }
+    }
+    public async Task searchrecord()
+    {
+        SqlDataReader result;
+        int pageindex=1;
+        TempRecord item;
+
+        var userdb = new UserDB(iconfiguration);
+        result = userdb.pRecordSearch(model.SearchText, 50, 1);
+
+        TempRecordList.Clear(); 
+
+
+
+        while (result.Read())
+        {
+            item = new TempRecord();
+            item.ID = (int)result["ID"];
+            item.Code = (string)result["Code"];
+            item.Description = (string)result["Description"];
+            item.UserType = (string)result["UserType"];
+            TempRecordList.Add(item);
+
+        }
+
+        userdb.CloseConnection();
+
+        StateHasChanged();
+
+    }
+
+    ///////////////////////////////////
+
+
+    protected UserPrompt? cp { get; set; }
+
+    protected void showUser(int xid)
+    {
+        cp.show(xid);
+
+    }
+    protected async Task statusPrompt_Click(bool needrefresh)
+    {
+        if (needrefresh)
+        {
+            searchrecord();
+        }
+
+    }
+
+
+    public async Task test1()
+    {
+
+
+        errormessage = DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss tt");
+
+        StateHasChanged(); 
+
+    }
+
+}

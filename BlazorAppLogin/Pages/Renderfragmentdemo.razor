@@ -1,0 +1,74 @@
+﻿@page "/renderfragmentdemo"
+
+<PageTitle>Render Fragment  Demo</PageTitle>
+
+<h1>Render Fragment  Demo</h1>
+
+
+<br />
+
+<RenderFragmentComponent>
+    <ChildContent>
+        <p>The time is @DateTime.Now</p>
+    </ChildContent>
+</RenderFragmentComponent>
+
+<hr />
+
+
+<RenderFragmentComponent2 Items="messages" TItem="string">
+    <Heading>
+        <h1>My list</h1>
+    </Heading>
+    <ItemTemplate Context="message">
+        <p>The message is: @message</p>
+    </ItemTemplate>
+</RenderFragmentComponent2>
+
+<hr />
+
+<RenderFragmentMultipleChildComponent DataSource="datalist" TData="string">
+    <ChildFragment>asdfasf</ChildFragment>
+    <ChildFragment>asdfsfa</ChildFragment>
+    <ChildFragment>afdsdfsadfsa</ChildFragment>
+</RenderFragmentMultipleChildComponent>
+<hr />
+<RenderFragmentMultipleChildComponent DataSource="datalist" TData="string">
+    <ChildFragment Context="message1">aaaa  @message1</ChildFragment>
+    <ChildFragment Context="message1">bbbbb  @message1</ChildFragment>
+    <ChildFragment Context="message1">ccccc  @message1</ChildFragment>
+</RenderFragmentMultipleChildComponent>
+
+
+<hr />
+
+<RenderFragmentMultipleChildComponent2>
+    <ChildFragment>Satu</ChildFragment>
+    <ChildFragment>Dua</ChildFragment>
+    <ChildFragment>Tiga</ChildFragment>
+</RenderFragmentMultipleChildComponent2>
+
+
+@*<RenderFragmentMultipleChildComponent2>
+    <ChildFragmen>Satu</ChildFragment>
+    <ChildFragmen>Dua</ChildFragment>
+    <ChildFragmen>Tiga</ChildFragment>
+</RenderFragmentMultipleChildComponent2>*@
+
+
+
+@code {
+    List<string> datalist = new List<string>
+                {
+                  "1",
+                  "2",
+                  "3",
+                  "4"
+                };
+
+    string[] messages = new[]
+         {
+        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    };
+   
+}

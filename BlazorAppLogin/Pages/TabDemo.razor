@@ -1,0 +1,83 @@
+﻿@page "/tabdemo"
+
+<PageTitle>Tab Demo</PageTitle>
+
+<h1>Tab Demo</h1>
+
+<div class="tabbar">
+    <div class="@tabcss[0]" @onclick="@(e => ShowTab(0))">Tab0</div>
+    @if (ShowEdit)
+    {
+        <div class="@tabcss[1]" @onclick="@(e => ShowTab(1))" id="defaultOpen">
+           Tab1
+
+            <a class="closetab" @onclick="@(e => hidemeedit())">X</a>
+        </div>
+
+    }
+</div>
+<br />
+    <div class="tabcontent">
+    <div style="display:@tabcontentdisplay[0]">
+
+      
+        Tab0 content
+        <br />
+        <button @onclick="@(e => ShowEditTab())" class="btn btn-primary">Show Tab1</button>
+
+    </div>
+    <div style="display:@tabcontentdisplay[1]">
+           @if (ShowEdit)
+            {
+            <div>
+        Tab1 content
+            </div>
+            }
+    </div>
+    </div>
+@code {
+
+
+    string[] tabcss = { "tablink-active", "tablink" };
+    string[] tabcontentdisplay = { "", "none" };
+    private async Task ShowTab(int xtabi)
+    {
+
+        if (!ShowEdit && xtabi == 1)
+        {
+
+            return;
+        }
+
+
+        for (int i = 0; i < tabcss.Count(); i++)
+        {
+            tabcss[i] = "tablink";
+            tabcontentdisplay[i] = "none";
+        }
+
+
+        tabcss[xtabi] = "tablink-active";
+        tabcontentdisplay[xtabi] = "";
+
+        StateHasChanged();
+        return;
+    }
+
+    private bool ShowEdit = false;
+    protected async Task hidemeedit()
+    {
+        await ShowTab(0);
+        ShowEdit = false;
+
+    }
+    protected void ShowEditTab()
+    {
+        ShowEdit = true;
+        ShowTab(1);
+
+        StateHasChanged();
+
+    }
+   
+}

@@ -1,0 +1,27 @@
+﻿
+<h1>Select</h1>
+
+<select class="form-control" value="@Value1" style="width:150px" @onchange="@OnValueChange">
+    <option selected disabled value="0">City?</option>
+
+        <option value="1">Tuaran</option>
+        <option value="2">Tamparuli</option>
+        <option value="3">Menggatal</option>
+        <option value="4">Berungis</option>
+
+</select>
+
+@code {
+    [Parameter]
+    public string Value1 { get; set; }
+
+    [Parameter]
+    public EventCallback<string> Value1Changed { get; set; }
+
+
+    private async Task OnValueChange(ChangeEventArgs args)
+    {
+        Value1 = (string)args.Value;
+        await Value1Changed.InvokeAsync(Value1);
+    }
+}

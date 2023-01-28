@@ -1,0 +1,23 @@
+﻿
+<div class="parent-component">
+
+
+        @foreach (var lChild in m_Children)
+        {
+            <div class="child-component">
+                @lChild
+
+          </div>
+        }
+
+</div>
+
+@code {
+
+
+    [Parameter]
+    public RenderFragment ChildFragment { set => m_Children.Add(value); }
+
+    /// Collection of all added child fragments
+    private List<RenderFragment> m_Children = new List<RenderFragment>();
+}

@@ -1,0 +1,52 @@
+﻿
+
+
+@if (ShowBox){
+                    <div class="InProgress">
+       
+            @Message
+       
+            </div>
+
+
+
+
+
+
+
+}
+
+@code {
+    //https://www.youtube.com/watch?v=1VturXFHmec
+    // Demonstrates how a parent component can supply parameters
+
+    protected bool ShowBox = false;
+
+    public void show(string msg)
+    {
+        Message = msg;
+        ShowBox = true;
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    public void hideme()
+    {
+        ShowBox = false;
+        InvokeAsync(StateHasChanged);
+     //   await onHideme.InvokeAsync(true);
+    }
+
+
+
+
+    public string? Message { get; set; } = "";
+
+    //[Parameter]
+    //public EventCallback<bool> onHideme { get; set; }
+
+
+
+}
+
+

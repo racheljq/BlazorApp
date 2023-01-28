@@ -1,0 +1,52 @@
+﻿body {
+}
+
+
+.dropbtn {
+    background-color: #3498DB;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+    .dropbtn:hover, .dropbtn:focus {
+        background-color: #2980B9;
+    }
+
+.customdd {
+    position: relative;
+    display: inline-block;
+}
+
+.customdd-content {
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    overflow: auto;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+    .customdd-content button {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        text-align:left;
+        display: block;
+        width: 100%;
+        cursor: pointer;
+        border: none;
+    }
+
+.customdd button:hover {
+    background-color: #ddd;
+    border: none;
+}
+.customdd button:focus {
+    background-color: #ddd;
+    outline: none;
+}
+
+

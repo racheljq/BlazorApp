@@ -1,0 +1,132 @@
+﻿<style>
+/* The Modal (background) */
+.modal {
+  display:block ; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  background-color: #fefefe;
+  margin: auto;
+  padding: 0;
+  border: 1px solid #888;
+  width: 500px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  -webkit-animation-name: animatetop;
+  -webkit-animation-duration: 0.4s;
+  animation-name: animatetop;
+  animation-duration: 0.4s
+}
+
+
+/* The Close Button */
+.close {
+  color: black;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-header {
+  padding: 2px 16px;
+        font-size: 20px;
+        font-weight:bold;
+  /*background-color: #5cb85c;*/
+  color: black;
+}
+
+.modal-body {padding: 20px 16px;}
+
+.modal-footer {
+  padding: 2px 16px;
+ /* background-color: #5cb85c;
+  color: white;*/
+}
+</style>
+
+
+@if (ShowBox){
+
+    <!-- The Modal -->
+    <div class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                @Title
+                <span @onclick="hideme" class="close">&times;</span>
+              
+            </div>
+            <div class="modal-body">
+                @Message
+            </div>
+            <div class="modal-footer">
+                <button type="button" @onclick="() => OnUserChoice(false)" class="btn btn-secondary" data-dismiss="model">No</button>
+
+                <button type="button" @onclick="() => OnUserChoice(true)" class="btn btn-danger">Yes</button>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+
+}
+
+@code {
+    //https://www.youtube.com/watch?v=1VturXFHmec
+    // Demonstrates how a parent component can supply parameters
+
+    protected bool ShowBox = false;
+
+    public void show(string msg)
+    {
+        Message = msg;
+        ShowBox = true;
+    }
+
+    protected void hideme()
+    {
+        ShowBox = false;
+    }
+
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public string? Message { get; set; } = "Want to delete?";
+
+    [Parameter]
+    public EventCallback<bool> UserChoice { get; set; }
+
+
+    protected async Task OnUserChoice(bool value)
+    {
+
+        ShowBox = false;
+        await UserChoice.InvokeAsync(value);
+    }
+}
+
+

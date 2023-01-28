@@ -1,0 +1,29 @@
+﻿@typeparam TData
+
+<div class="parent-component">
+    @foreach (var lData in DataSource)
+    {
+        <div>
+            @lData<br />
+
+        @foreach (var lChild in m_Children)
+        {
+            <div class="child-component">
+                @lChild(lData)
+                </div>
+        }
+        </div>
+    }
+
+</div>
+
+@code {
+    [Parameter]
+    public List<TData> DataSource { get; set; }
+
+    [Parameter]
+    public RenderFragment<TData> ChildFragment { set => m_Children.Add(value); }
+
+    /// Collection of all added child fragments
+    private List<RenderFragment<TData>> m_Children = new List<RenderFragment<TData>>();
+}

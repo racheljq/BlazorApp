@@ -1,0 +1,67 @@
+﻿
+@if (ShowBox)
+{
+    <!-- The Modal -->
+    <div class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="modal-header">
+                @Title
+                <span @onclick="() => OnChoiceChange(false)" class="close">&times;</span>
+              
+            </div>
+            <div class="modal-body">
+                @Message
+            </div>
+            <div class="modal-footer">
+                <button type="button" @onclick="() => OnChoiceChange(false)" class="btn btn-secondary" data-dismiss="model">Cancel</button>
+
+                <button type="button" @onclick="() => OnChoiceChange(true)" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+
+    </div>
+
+
+}
+
+
+@code {
+    //https://www.youtube.com/watch?v=1VturXFHmec
+    // Demonstrates how a parent component can supply parameters
+
+
+    protected bool ShowBox = false;
+
+
+    [Parameter]
+    public string? Title { get; set; } = "Delete Confirmation";
+
+    [Parameter]
+    public string? Message { get; set; } = "Want to delete?";
+
+    [Parameter]
+    public EventCallback<bool> UserChoice { get; set; }
+
+    public void Show(string msg)
+    {
+        Message = msg;
+        ShowBox = true;
+       // StateHasChanged();
+    }
+
+    protected async Task OnChoiceChange(bool value)
+    {
+
+        Message = "test1";
+        ShowBox = false;
+        await UserChoice.InvokeAsync(value);
+    }
+
+    public void closewindow()
+    {
+        ShowBox = false;
+        StateHasChanged();
+    }
+}

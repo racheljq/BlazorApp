@@ -1,0 +1,42 @@
+﻿@page "/accessdatabasedemo"
+
+@using BlazorAppLogin.Data;
+@inject IConfiguration iconfiguration
+
+
+<PageTitle>Access Database Demo</PageTitle>
+
+<h1>Access Database Demo without register service</h1>
+
+
+<button @onclick="@(e => ReadUser())">Read User Detail</button>
+
+
+<br />
+user Detail: 
+
+@if (userrec != null)
+{
+    @userrec.ID <br />
+    @userrec.Code <br />
+    @userrec.Description 
+
+}
+
+@code {
+
+
+    private UserRecord userrec;
+    private void ReadUser()
+    {
+        var userdb = new UserDB(iconfiguration);
+
+        if (userdb.pRecordFind(1,""))
+        {
+            userrec = new UserRecord(userdb.MyUserRecord);
+        }
+        userdb.CloseConnection();
+    }
+
+
+}

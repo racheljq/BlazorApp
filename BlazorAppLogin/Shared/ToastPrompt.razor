@@ -1,0 +1,16 @@
+﻿@inject IJSRuntime js
+<div id="snackbar20200509" class="snackbar11">
+</div>
+
+@code {
+    public bool show20220908 { get; set; } = false;
+
+
+    public async Task Show(string message)
+    {
+
+        await js.InvokeVoidAsync("showToast20200509", message);
+
+    }
+
+}

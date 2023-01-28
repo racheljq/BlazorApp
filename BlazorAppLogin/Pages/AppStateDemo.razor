@@ -1,0 +1,31 @@
+﻿@page "/appstatedemo"
+
+
+@using BlazorAppLogin.Data
+@inject AppState AppState
+@inject IJSRuntime js 
+
+<PageTitle>AppState Demo</PageTitle>
+
+<h1>AppState Demo</h1>
+
+
+<button @onclick="@(e => SelectColour("Red"))">Select Red</button>
+<button @onclick="@(e => SelectColour("Blue"))">Select Blue</button>
+
+<br />
+Selected Color: @AppState.SelectedColour
+@*<button @onclick="SelectColour(\"Red\")">Select Red</button>
+<button @onclick="SelectColour(\"Blue\")">Select Blue</button>*@
+@code {
+
+    void SelectColour(string cl)
+    {
+        AppState.SetColour(cl);
+
+      //  StateHasChanged();
+
+        //InvokeAsync(StateHasChanged);
+    }
+
+}

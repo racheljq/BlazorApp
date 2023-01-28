@@ -1,0 +1,33 @@
+﻿
+
+<h1>Custom AutoComplete</h1>
+
+<input type="text" value="@Value1" list="selectitem" @oninput="@OnInputChange" />
+
+<datalist id="selectitem">
+    <option value="proton"></option>
+    <option value="toyota"></option>
+    <option value="nissan"></option>
+    <option value="kancil"></option>
+    <option value="hundai"></option>
+    <option value="saga"></option>
+</datalist>
+
+
+
+@code {
+    //https://www.youtube.com/watch?v=fkzOzRbAYbA
+
+    [Parameter]
+    public string Value1 { get; set; }
+
+    [Parameter]
+    public EventCallback<string> Value1Changed { get; set; }
+
+
+    private async Task OnInputChange(ChangeEventArgs args)
+    {
+        Value1 = (string)args.Value;
+        await Value1Changed.InvokeAsync(Value1);
+    }
+}

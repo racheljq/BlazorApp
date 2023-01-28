@@ -1,0 +1,17 @@
+﻿@if (ErrorMessage != "")
+{
+
+    <div class="err">@ErrorMessage </div>
+
+}
+
+@code {
+    [Parameter]
+    public string ErrorMessage { get; set; }
+
+    //  public RenderFragment ErrorMessage { get; set; }
+
+    //  public string abc = this.ErrorMessage.ToString();
+
+    // public string abc => Markdig.Markdown.ToHtml(this.ErrorMessage.ToString());
+}

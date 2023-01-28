@@ -1,0 +1,58 @@
+﻿@page "/counter"
+@attribute [Authorize(Roles = "administrator,user")]
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+<div>
+    @message
+
+</div>
+<InProgressPrompt @ref="cp2" />
+@*<InProgressPrompt @ref="cp2" onHideme="confirmPrompt_Click" />*@
+
+@code {
+    private int currentCount = 0;
+    private string message = "";
+
+    public Counter()
+    {
+        cp2 = new InProgressPrompt();
+    }
+
+    protected InProgressPrompt? cp2 { get; set; }
+
+
+    private async Task IncrementCount()
+    {
+
+        //  cp.show("Testing");
+        cp2.show("Testing");
+        await Task.Delay(1000);
+        //  currentCount++;
+        increasevalue(ref currentCount);
+        cp2.hideme();
+
+    }
+
+
+    private void increasevalue(ref int v)
+    {
+        v += 2;
+
+        int b = 0;
+        b = v == 10 ? 50 : v;
+        v = b;
+    }
+
+
+
+    protected async Task confirmPrompt_Click(bool a)
+    {
+
+    }
+}
